@@ -1,0 +1,13 @@
+{
+  "name": "empresa-intel-netlify",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pesquisa Inteligente de Empresas - Netlify + GitHub",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo \"Static site ready\""
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pesquisa Inteligente de Empresas</title>
+<style>
+:root{--bg:#eef4fb;--card:#fff;--text:#06152d;--muted:#5b6f8c;--blue:#155bd8;--line:#cfe0f5;--danger:#fff0f0}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}a{color:#064fd1}.wrap{max-width:1240px;margin:0 auto;padding:22px}
+.hero{background:linear-gradient(135deg,#123f91,#1a67db);color:#fff;border-radius:24px;padding:26px;margin-bottom:18px}.hero h1{margin:0 0 8px;font-size:34px}.hero p{margin:0;line-height:1.5}.notice{margin-top:14px;border:1px solid rgba(255,255,255,.35);border-radius:14px;padding:10px 14px;background:rgba(255,255,255,.12)}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:18px}.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:0 12px 30px rgba(12,40,80,.08);overflow:hidden}.left{padding:18px}.rightHead{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:20px;border-bottom:1px solid var(--line)}
+h2{margin:0 0 14px;font-size:25px}label{display:block;font-weight:800;margin:12px 0 7px}input,textarea,select{width:100%;border:1px solid #bcd0ec;border-radius:14px;padding:12px;font-size:15px;background:#fff}textarea{min-height:82px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.btn{border:0;border-radius:14px;padding:12px 14px;font-weight:800;cursor:pointer;background:#eef4ff;color:#0c52c6}.primary{background:#155bd8;color:#fff}.danger{background:#fff0f0;color:#b30000}.btn:disabled{opacity:.55;cursor:not-allowed}
+.company{border:1px solid var(--line);background:#f7fbff;border-radius:16px;padding:12px;margin-top:10px}.company strong{display:block;font-size:16px}.company a{display:block;font-size:13px;margin:4px 0 10px;word-break:break-word}.loading,.errorBox{margin-top:12px;border-radius:14px;padding:11px 12px}.loading{background:#eef4ff;color:#155bd8;font-weight:800}.errorBox{background:var(--danger);border:1px solid #ffb7b7;color:#b30000}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:20px 20px 8px}.stat{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}.stat b{display:block;color:#155bd8;font-size:26px}.results{padding:10px 20px 24px}
+.result{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#fff;margin-top:14px}.resultTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;background:#f7fbff;border-bottom:1px solid var(--line);padding:16px 20px}.resultTop h3{margin:0;font-size:24px}.badge{background:#e8fff1;color:#087c38;border-radius:999px;padding:8px 12px;font-weight:800}.badge.err{background:#ffe6e6;color:#b30000}
+.content{padding:18px}.section{border:1px solid var(--line);border-radius:16px;padding:15px;margin:12px 0;background:#fff}.section h4{margin:0 0 10px;font-size:18px}.columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.muted{color:var(--muted)}ul{margin:8px 0 0 20px;padding:0}li{margin:7px 0;line-height:1.45}.linkList a{display:block;margin:6px 0;word-break:break-word}.cleanText{white-space:normal;line-height:1.55;color:#10233f}.small{font-size:13px}.empty{padding:20px;color:var(--muted)}
+.rawPage{margin-top:10px;border:1px solid var(--line);border-radius:12px;background:#f8fbff;overflow:hidden}.rawPage summary{cursor:pointer;padding:12px;font-weight:800;list-style:none}.rawPage summary::-webkit-details-marker{display:none}.rawPage summary::before{content:"▶";display:inline-block;margin-right:8px}.rawPage[open] summary::before{transform:rotate(90deg)}.rawBody{padding:0 12px 12px}.rawBody p{max-height:320px;overflow:auto;background:#fff;padding:12px;border-radius:10px;border:1px solid var(--line)}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.stats,.columns{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>Pesquisa Inteligente de Empresas</h1>
+    <p>Versão online para Netlify + GitHub. Pesquisa sites públicos, extrai contactos, localização, links e cria resumos legíveis.</p>
+    <div class="notice">Netlify tem limite de tempo. Para melhores resultados usa 12 ou 25 páginas; 50 pode devolver só o que conseguir antes do limite.</div>
+  </div>
+
+  <div class="grid">
+    <aside class="panel left">
+      <h2>Empresas</h2>
+      <label>Nome</label><input id="name" placeholder="Nome da empresa">
+      <label>Site</label><input id="site" placeholder="https://www.exemplo.pt">
+      <label>Páginas a tentar ler</label>
+      <select id="maxPages"><option value="12">Rápido - 12 páginas</option><option selected value="25">Recomendado - 25 páginas</option><option value="50">Completo - 50 páginas</option></select>
+      <label>Notas</label><textarea id="notes" placeholder="Notas internas opcionais"></textarea>
+      <div class="row"><button class="btn primary" id="addBtn">Adicionar</button><button class="btn" id="defaultBtn">10 empresas</button></div>
+      <div class="row"><button class="btn primary" id="allBtn">Pesquisar todas</button><button class="btn danger" id="stopBtn" disabled>Parar pesquisa</button></div>
+      <div class="row"><button class="btn danger" id="clearBtn">Limpar</button><button class="btn" id="defaultBtn2">Repor empresas</button></div>
+      <div id="status"></div><div id="companies"></div>
+    </aside>
+
+    <main class="panel">
+      <div class="rightHead"><h2>Resultados organizados</h2><div><button class="btn" id="jsonBtn">Exportar JSON</button><button class="btn" id="csvBtn">Exportar CSV</button></div></div>
+      <div class="stats"><div class="stat"><b id="stCompanies">0</b>empresas</div><div class="stat"><b id="stEmails">0</b>emails</div><div class="stat"><b id="stPhones">0</b>telefones</div><div class="stat"><b id="stLinks">0</b>links</div></div>
+      <div class="results" id="results"><div class="empty">Ainda não existem resultados.</div></div>
+    </main>
+  </div>
+</div>
+
+<script>
+const companies=[]; let results=[]; let stopRequested=false; let currentController=null; let isSearching=false;
+const defaults=[
+ {name:"Mundo Textil",site:"https://www.mundotextil.pt"},{name:"Carbobois",site:"https://carbobois.com"},{name:"Papeleira",site:"https://papeleira.pt"},{name:"Know How",site:"https://knowhow.com.pt"},{name:"PMS",site:"https://www.hostpms.com"},{name:"Medika",site:"https://www.medika.pt"},{name:"Frazivel",site:"https://www.fravizel.com"},{name:"Sogrape",site:"https://sogrape.com/pt"},{name:"Petmaxi",site:"https://www.petmaxi.pt"},{name:"IDPC",site:"https://idpc.net/en/"}
+];
+const $=id=>document.getElementById(id);
+const asList=v=>Array.isArray(v)?v:(v?[v]:[]);
+function mostlyUppercase(s){const letters=Array.from(String(s||"")).filter(ch=>ch.toLowerCase()!==ch.toUpperCase()); if(letters.length<12)return false; const upper=letters.filter(ch=>ch===ch.toUpperCase()).length; return upper/letters.length>0.70;}
+function cleanText(v){
+ let s=String(v??"");
+ const pairs=[["Ã§","ç"],["Ã£","ã"],["Ãµ","õ"],["Ã¡","á"],["Ã©","é"],["Ã­","í"],["Ã³","ó"],["Ãº","ú"],["Ãª","ê"],["Ã¢","â"],["Ãô","ô"],["Ã€","À"],["Ã‰","É"],["Ã‡","Ç"],["Âº","º"],["Âª","ª"],["â€“","-"],["â€”","-"],["ConteÃºdos","Conteúdos"],["diferenciaÃ§Ã£o","diferenciação"],["InformaÃ§Ã£o","Informação"],["LocalizaÃ§Ã£o","Localização"]];
+ for(const [a,b] of pairs) s=s.split(a).join(b);
+ s=s.replace(/^>\s*/g,"").replace(/\bBEM[-\s]?VINDO\s+À?\s+/i,"").replace(/^(Empresa|Atividade e oferta|Mercado e diferenciação|Conteúdos recentes|Informação institucional)\s*:\s*/i,"");
+ s=s.replace(/`/g,"'").replace(/\s+/g," ").trim();
+ if(mostlyUppercase(s)) s=s.toLocaleLowerCase("pt-PT");
+ s=s.replace(/^\s*([a-záàâãéêíóôõúç])/iu,m=>m.toLocaleUpperCase("pt-PT"));
+ s=s.replace(/([.!?]\s+)([a-záàâãéêíóôõúç])/giu,(m,p1,p2)=>p1+p2.toLocaleUpperCase("pt-PT"));
+ s=s.replace(/\bgps\b/gi,"GPS").replace(/\bnif\b/gi,"NIF").replace(/\bnipc\b/gi,"NIPC").replace(/\biva\b/gi,"IVA");
+ if(s && s.length>35 && !/[.!?]$/.test(s)) s+=".";
+ return s;
+}
+function safe(v){return cleanText(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function isContactFact(v){const s=cleanText(v).toLowerCase(); return /[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}/i.test(s)||/(\+351\s*)?\d{3}[\s\-.]?\d{3}[\s\-.]?\d{3}/.test(s)||s.includes("emails encontrados")||s.includes("telefones encontrados");}
+function badText(v){const s=cleanText(v).toLowerCase(); if(!s||s.length<25)return true; const bad=["provider_name","provider_url","author_name","author_url","thumbnail_url","wp-json","oembed","type\":\"rich","html\":\"","\\u00","powered by wordpress","elegant themes","código do projeto","codigo do projeto","poci-","feder","compete 2020","denominación del proyecto","proyectos de i+d","newsletter","dados pessoais","carrinho","checkout"]; return bad.some(x=>s.includes(x));}
+function cleanList(arr){const seen=new Set(),out=[]; for(const item of asList(arr)){ if(isContactFact(item)||badText(item))continue; const c=cleanText(item); const key=c.toLowerCase().replace(/[^\p{L}\p{N}]+/gu," ").trim(); if(seen.has(key))continue; seen.add(key); out.push(c);} return out;}
+const hasItems=v=>cleanList(v).length>0;
+function rawItems(v){return asList(v).filter(x=>x!==null&&x!==undefined&&String(x).trim()!=="");}
+function onlyPortugalPhones(v){return rawItems(v).map(x=>String(x).trim()).filter(x=>x.startsWith("+351"));}
+function emailLabel(email){const e=String(email||"").toLowerCase(); if(e.includes("recrut")||e.includes("rh")||e.includes("jobs")||e.includes("careers"))return"Recrutamento / Recursos Humanos"; if(e.includes("geral")||e.includes("info")||e.includes("contact"))return"Geral / Informações"; if(e.includes("comercial")||e.includes("sales")||e.includes("vendas"))return"Comercial / Vendas"; if(e.includes("suporte")||e.includes("support")||e.includes("apoio"))return"Suporte / Apoio ao cliente"; if(e.includes("finance")||e.includes("financeiro")||e.includes("contab"))return"Financeiro / Contabilidade"; if(e.includes("marketing"))return"Marketing"; if(e.includes("qualidade")||e.includes("quality"))return"Qualidade"; if(e.includes("export"))return"Exportação"; if(e.includes("denuncia")||e.includes("denuncias"))return"Canal de denúncias"; return"Email geral";}
+function rawBullets(arr){arr=rawItems(arr);return `<ul>${arr.map(x=>`<li>${safe(x)}</li>`).join("")}</ul>`;}
+function emailBullets(arr){arr=rawItems(arr);return `<ul>${arr.map(x=>`<li><b>${safe(emailLabel(x))}:</b> ${safe(x)}</li>`).join("")}</ul>`;}
+function phoneBullets(arr){arr=onlyPortugalPhones(arr);return `<ul>${arr.map(x=>`<li><b>Telefone geral:</b> ${safe(x)}</li>`).join("")}</ul>`;}
+function setStatus(msg,type="loading"){$("status").innerHTML=msg?`<div class="${type==="error"?"errorBox":"loading"}">${safe(msg)}</div>`:"";}
+function addCompany(){const name=$("name").value.trim(),site=$("site").value.trim(),notes=$("notes").value.trim(); if(!name||!site){setStatus("Preenche nome e site.","error");return;} companies.push({name,site,notes}); $("name").value="";$("site").value="";$("notes").value=""; renderCompanies();}
+function loadDefaults(){companies.splice(0,companies.length,...defaults.map(x=>({...x,notes:""}))); renderCompanies();}
+function removeCompany(i){companies.splice(i,1); renderCompanies();}
+function renderCompanies(){$("companies").innerHTML=companies.map((c,i)=>`<div class="company"><strong>${safe(c.name)}</strong><a href="${safe(c.site)}" target="_blank">${safe(c.site)}</a><div class="row"><button class="btn" data-search="${i}">Pesquisar</button><button class="btn danger" data-remove="${i}">Remover</button></div></div>`).join("");}
+async function searchOne(i,fromBatch=false){
+ if(!fromBatch){stopRequested=false;$("stopBtn").disabled=false;}
+ const c=companies[i]; if(!c||stopRequested)return; setStatus("A pesquisar "+c.name+"...");
+ currentController=new AbortController();
+ try{
+  const r=await fetch("/.netlify/functions/search",{method:"POST",headers:{"Content-Type":"application/json"},signal:currentController.signal,body:JSON.stringify({name:c.name,site:c.site,notes:c.notes,maxPages:Number($("maxPages").value||25)})});
+  const data=await r.json(); if(!data.name)data.name=c.name; if(!data.site)data.site=c.site;
+  if(stopRequested)return; const idx=results.findIndex(x=>x.name===c.name); if(idx>=0)results[idx]=data; else results.push(data); renderResults(); setStatus("");
+ }catch(e){ if(e&&e.name==="AbortError"){setStatus("Pesquisa parada. Podes voltar a pesquisar.");return;} setStatus("Erro na pesquisa: "+(e&&e.message?e.message:e),"error");}
+ finally{currentController=null;if(!fromBatch){$("allBtn").disabled=false;$("stopBtn").disabled=true;isSearching=false;stopRequested=false;}}
+}
+async function searchAll(){if(!companies.length){setStatus("Carrega primeiro em 10 empresas ou adiciona uma empresa.","error");return;} stopRequested=false;isSearching=true;$("allBtn").disabled=true;$("stopBtn").disabled=false; for(let i=0;i<companies.length;i++){if(stopRequested)break; await searchOne(i,true);} isSearching=false;$("allBtn").disabled=false;$("stopBtn").disabled=true;if(stopRequested){setStatus("Pesquisa parada. Podes continuar a usar a app.");stopRequested=false;}else{setStatus("Pesquisa terminada.");setTimeout(()=>setStatus(""),1800);}}
+function stopSearch(){stopRequested=true;if(currentController){try{currentController.abort();}catch(e){}} isSearching=false;$("allBtn").disabled=false;$("stopBtn").disabled=true;setStatus("Pesquisa atual parada. Podes pesquisar outra empresa.");setTimeout(()=>{if(!isSearching)stopRequested=false;},600);}
+function importantLinks(r){return [...asList(r.importantLinks),...asList(r.socials)].filter(Boolean).slice(0,25);}
+function bullets(arr){arr=cleanList(arr);return `<ul>${arr.map(x=>`<li>${safe(x)}</li>`).join("")}</ul>`;}
+function links(arr){arr=asList(arr).filter(Boolean);return `<div class="linkList">${arr.map(x=>`<a href="${safe(x)}" target="_blank" rel="noopener">${safe(x)}</a>`).join("")}</div>`;}
+function section(t,b){return b&&String(b).trim()?`<div class="section"><h4>${safe(t)}</h4>${b}</div>`:"";}
+function bulletSection(t,a){return hasItems(a)?`<h4>${safe(t)}</h4>${bullets(a)}`:"";}
+function rawTitle(p,idx){const u=String((p&&p.url)||"").toLowerCase(),t=cleanText((p&&p.text)||"");let title="Texto lido da página";if(u.includes("contact"))title="Contactos e localização";else if(u.includes("contacto"))title="Contactos e localização";else if(u.includes("sobre")||u.includes("about")||u.includes("quem-somos"))title="Apresentação da empresa";else if(u.includes("produto")||u.includes("servico"))title="Produtos e serviços";else if(u.includes("noticia")||u.includes("news")||u.includes("blog"))title="Notícias e conteúdos";else{const f=t.split(/[.!?]/).map(x=>x.trim()).find(x=>x.length>25&&x.length<110);if(f)title=f;}return `${idx+1}. ${title.length>90?title.slice(0,87)+"...":title}`;}
+function rawTextsHtml(pages){pages=asList(pages).filter(p=>p&&p.text); if(!pages.length)return ""; return `<div class="section"><h4>Todos os textos lidos do site</h4><p class="muted">Os textos ficam fechados. Carrega na seta para abrir.</p>${pages.map((p,i)=>`<details class="rawPage"><summary>${safe(rawTitle(p,i))}</summary><div class="rawBody"><div class="small muted">Fonte: <a href="${safe(p.url)}" target="_blank">${safe(p.url)}</a></div><p class="cleanText">${safe(p.text)}</p></div></details>`).join("")}</div>`;}
+function renderResults(){
+ $("stCompanies").textContent=results.length;$("stEmails").textContent=results.reduce((a,r)=>a+rawItems(r.emails).length,0);$("stPhones").textContent=results.reduce((a,r)=>a+onlyPortugalPhones(r.phones).length,0);$("stLinks").textContent=results.reduce((a,r)=>a+importantLinks(r).length,0);
+ if(!results.length){$("results").innerHTML='<div class="empty">Ainda não existem resultados.</div>';return;}
+ $("results").innerHTML=results.map(r=>{
+  const summary=r.summary?section("Resumo curto",`<p class="cleanText">${safe(r.summary)}</p>`):"";
+  const strong=hasItems(r.strongSummary)?section("Resumo detalhado e útil",bullets(r.strongSummary)):"";
+  const facts=hasItems(r.keyFacts)?section("Pontos importantes encontrados",bullets(r.keyFacts)):"";
+  const highlights=hasItems(r.highlights)?section("Leitura recomendada",bullets(r.highlights)):"";
+  const contacts=`${rawItems(r.emails).length?`<b>Emails</b>${emailBullets(r.emails)}`:""}${onlyPortugalPhones(r.phones).length?`<br><b>Telefones</b>${phoneBullets(r.phones)}`:""}`.trim();
+  const loc=hasItems(r.locations)?bullets(r.locations):"";
+  const legal=rawItems(r.nifs).length?`<b>NIF / NIPC</b>${rawBullets(r.nifs)}`:"";
+  const linkBody=importantLinks(r).length?links(importantLinks(r)):"";
+  const cols1=(contacts||loc)?`<div class="columns">${contacts?`<div class="section"><h4>Contactos</h4>${contacts}</div>`:""}${loc?`<div class="section"><h4>Localização</h4>${loc}</div>`:""}</div>`:"";
+  const cols2=(legal||linkBody)?`<div class="columns">${legal?`<div class="section"><h4>Dados legais</h4>${legal}</div>`:""}${linkBody?`<div class="section"><h4>Links importantes</h4>${linkBody}</div>`:""}</div>`:"";
+  const organized=[bulletSection("Apresentação da empresa",r.sections&&r.sections.about),bulletSection("Produtos, serviços e áreas de negócio",r.sections&&r.sections.services),bulletSection("Mercado, clientes e diferenciação",r.sections&&r.sections.market),bulletSection("Notícias e conteúdos recentes",r.sections&&r.sections.news),bulletSection("Informação institucional e legal",r.sections&&r.sections.legal)].filter(Boolean).join("");
+  const org=organized?section("Informação organizada",organized):"";
+  const sources=asList(r.sources).length?section("Fontes lidas",links(r.sources)):"";
+  const raw=rawTextsHtml(r.rawPages);
+  const fallback=!(summary||strong||facts||highlights||cols1||cols2||org||sources||raw)?section("Sem informação útil encontrada",`<p class="muted">A app tentou ler o site, mas não encontrou texto público claro.</p>`):"";
+  return `<article class="result"><div class="resultTop"><div><h3>${safe(r.name||"Empresa")}</h3><a href="${safe(r.site||"#")}" target="_blank">${safe(r.site||"")}</a><div class="small muted">Páginas lidas: ${safe(r.pagesRead||0)} ${r.pagesDiscovered?" | Páginas encontradas: "+safe(r.pagesDiscovered):""} ${r.searchedAt?" | Pesquisado em: "+safe(r.searchedAt):""}</div>${r.note?`<div class="small muted">${safe(r.note)}</div>`:""}</div><span class="badge ${r.ok?'':'err'}">${r.ok?'OK':'Aviso'}</span></div><div class="content">${summary}${strong}${facts}${highlights}${cols1}${cols2}${org}${sources}${raw}${fallback}</div></article>`;
+ }).join("");
+}
+function clearAll(){results=[];companies.length=0;renderCompanies();renderResults();setStatus("");}
+function download(name,text,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();URL.revokeObjectURL(a.href);}
+function exportJson(){download("empresas.json",JSON.stringify(results,null,2),"application/json");}
+function exportCsv(){const rows=[["Empresa","Site","Emails","Telefones","NIF","Localizacao","Resumo"]];results.forEach(r=>rows.push([r.name,r.site,asList(r.emails).map(x=>`${emailLabel(x)}: ${x}`).join(" | "),onlyPortugalPhones(r.phones).join(" | "),asList(r.nifs).join(" | "),asList(r.locations).join(" | "),r.summary||""]));download("empresas.csv",rows.map(row=>row.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(";")).join("\n"),"text/csv");}
+document.addEventListener("click",e=>{if(e.target.id==="addBtn")addCompany();if(e.target.id==="defaultBtn"||e.target.id==="defaultBtn2")loadDefaults();if(e.target.id==="allBtn")searchAll();if(e.target.id==="stopBtn")stopSearch();if(e.target.id==="clearBtn")clearAll();if(e.target.id==="jsonBtn")exportJson();if(e.target.id==="csvBtn")exportCsv();if(e.target.dataset.search)searchOne(Number(e.target.dataset.search),false);if(e.target.dataset.remove)removeCompany(Number(e.target.dataset.remove));});
+renderCompanies();renderResults();
+</script>
+</body></html>
